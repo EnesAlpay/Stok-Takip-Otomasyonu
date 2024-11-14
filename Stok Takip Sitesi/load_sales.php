@@ -3,7 +3,7 @@ session_start();
 include 'database.php';
 
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$limit = 10; // Number of records per page
+$limit = 10; 
 $offset = ($page - 1) * $limit;
 
 $query = "SELECT * FROM sales WHERE user_id=? LIMIT ? OFFSET ?";
