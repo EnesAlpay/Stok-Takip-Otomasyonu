@@ -1,7 +1,6 @@
 <?php
 include 'header.php';
 
-// Satış işlemi gerçekleştiriliyor
 if (isset($_POST['satis_ekle'])) {
     $firma_adi = $_POST['firma_adi_satis'];
     $urun_adi = $_POST['urun_adi_satis'];
@@ -13,18 +12,15 @@ if (isset($_POST['satis_ekle'])) {
     $musteri_adres = $_POST['musteri_adres'];
     $musteri_telefon = $_POST['musteri_telefon'];
 
-    // Ürünün stokta olup olmadığını kontrol et
     $query = "SELECT id, adet FROM products WHERE firma_adi=? AND urun_adi=? AND urun_turu=? AND urun_rengi=? AND user_id=?";
     $stmt = executeQuery($conn, $query, [$firma_adi, $urun_adi, $urun_turu, $urun_rengi, $_SESSION['user_id']], "ssssi");
     $product = $stmt->get_result()->fetch_assoc();
 
     if ($product) {
         if ($product['adet'] >= $adet) {
-            // Satışı ekle
             $query = "INSERT INTO sales (user_id, firma_adi, urun_adi, urun_turu, urun_rengi, adet, satilma_tarihi, musteri_adi, musteri_adres, musteri_telefon) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             executeQuery($conn, $query, [$_SESSION['user_id'], $firma_adi, $urun_adi, $urun_turu, $urun_rengi, $adet, $satilma_tarihi, $musteri_adi, $musteri_adres, $musteri_telefon], "issssissss");
 
-            // Stok güncelle
             $query = "UPDATE products SET adet = adet - ? WHERE id=?";
             executeQuery($conn, $query, [$adet, $product['id']], "ii");
 
