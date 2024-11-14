@@ -1,7 +1,6 @@
 <?php
 
-include 'header.php';  // Ensure common functions are included
-
+include 'header.php';  
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.html");
     exit;
@@ -16,7 +15,6 @@ if (isset($_POST['siparis_ver'])) {
     $urun_rengi = $_POST['urun_rengi'];
     $adet = $_POST['adet'];
 
-    // Insert new order into the database
     $query = "INSERT INTO orders (user_id, firma_adi, urun_adi, urun_turu, urun_rengi, adet, status) VALUES (?, ?, ?, ?, ?, ?, 'pending')";
     executeQuery($conn, $query, [$user_id, $firma_adi, $urun_adi, $urun_turu, $urun_rengi, $adet], "issssi");
 
@@ -24,20 +22,16 @@ if (isset($_POST['siparis_ver'])) {
     exit;
 }
 
-// Check if the order has been confirmed
 if (isset($_POST['siparis_onayla'])) {
     $siparis_id = $_POST['siparis_id'];
 
-    // Update the order status to 'confirmed'
     $query = "UPDATE orders SET status='confirmed' WHERE id=? AND user_id=?";
     executeQuery($conn, $query, [$siparis_id, $user_id], "ii");
 
-    // Redirect to stock update
     header("Location: stock.php?order_id=" . $siparis_id);
     exit;
 }
 
-// Fetch pending orders for display
 $query = "SELECT * FROM orders WHERE user_id=? AND status='pending'";
 $stmt = executeQuery($conn, $query, [$user_id], "i");
 $pending_orders = $stmt->get_result();
